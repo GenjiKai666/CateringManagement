@@ -25,7 +25,7 @@ public class PurchasePO {
     @TableField
     private String payMethod;
     @TableField
-    private Integer patStatus;
+    private Integer payStatus;
     @TableField
     private Integer customerId;
     @TableField
