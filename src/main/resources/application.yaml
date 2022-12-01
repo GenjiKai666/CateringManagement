@@ -9,6 +9,9 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
+    view:
+      prefix: /
+      suffix: .jsp
 
 #mybatis-plus
 mybatis-plus:
