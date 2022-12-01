@@ -25,5 +25,4 @@ public class DishPO {
     private BigDecimal price;
     @TableField
     private Integer dishTypeId;
-
 }
