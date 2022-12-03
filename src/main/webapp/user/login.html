@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户登陆</title>
+    <!--  Load bootstrap  -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <script src="/static/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            background: url("/static/picture/rs3.jpg");
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="main">
+    <div class="row clearfix">
+        <div class="col-md-4 column">
+        </div>
+        <div class="col-md-4 column">
+            <div :class="error"> 登陆失败： 用户名或密码错误</div>
+            <div class="form-group">
+                <label for="exampleInputEmail1" class="text-primary">用户名</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" v-model="name"/>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1" class="text-primary">密码</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" v-model="password"/>
+            </div>
+            <button @click="submit" class="btn btn-default center-block">登陆</button>
+            <div class="text-right">
+                <a href="/user/register.html" class="text-primary">没有帐号去注册-></a>
+            </div>
+
+        </div>
+        <div class="col-md-4 column">
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/axios.min.js"></script>
+<script type="module" lang="ts">
+    import {createApp} from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+    createApp({
+        data() {
+            return {
+                error: {
+                    alert: true,
+                    'alert-danger': true,
+                    invisible: true
+                },
+                name: null,
+                password: null
+            }
+        },
+        methods: {
+            submit() {
+                let that = this;
+                let success = (response) => {
+                    this.error.invisible = true
+                    window.location.href = "/";
+                };
+                let fail = (error) => {
+                    this.error.invisible = false;
+                };
+                console.log(this.name)
+                axios
+                    .post("/user/login",
+                        {
+                            name: this.name,
+                            password: this.password
+                        })
+                    .then(success)
+                    .catch(fail)
+            }
+        }
+    }).mount('#main')
+</script>
+</body>
+</html>

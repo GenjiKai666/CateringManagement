@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>个人信息</title>
+    <!--  Load bootstrap  -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <script src="/static/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container" id="main">
+    <div class="row clearfix">
+        <div class="col-md-4 column">
+        </div>
+        <div class="col-md-4 column">
+            <div :class="{alert: true,'alert-danger': true, invisible: !error}">
+                {{ msg }}
+            </div>
+            <div class="form-group">
+                <label for="inputName" class="text-primary">用户名</label>
+                <input type="text"
+                       class="form-control"
+                       id="inputName"
+                       :placeholder="userInfo.name"
+                       v-model="name"
+                       :disabled="!allowChange"/>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword" class="text-primary">密码</label>
+                <input type="password"
+                       class="form-control"
+                       id="inputPassword"
+                       :placeholder="userInfo.password"
+                       v-model="password"
+                       :disabled="!allowChange"/>
+            </div>
+            <div class="form-group" v-show="allowChange && password!=null">
+                <label for="inputRepeatedPassword" class="text-primary">重复密码</label>
+                <input type="password"
+                       class="form-control"
+                       id="inputRepeatedPassword"
+                       v-model="repeatedPassword"
+                       :disabled="!allowChange"/>
+            </div>
+            <div class="form-group">
+                <label for="inputPhone" class="text-primary">手机号</label>
+                <input type="tel"
+                       class="form-control"
+                       id="inputPhone"
+                       :placeholder="userInfo.phone"
+                       v-model="phone"
+                       :disabled="!allowChange"/>
+            </div>
+            <div class="row clearfix">
+                <div v-if="allowChange">
+                    <div class="col-md-2 colum"></div>
+                    <div class="col-md-3 column">
+                        <button @click="update" class="btn btn-default">更新</button>
+                    </div>
+                    <div class="col-md-1 colum"></div>
+                    <div class="col-md-3 column">
+                        <button @click="cancel" class="btn btn-default">取消</button>
+                    </div>
+                </div>
+                <div v-else>
+                    <button @click="change" class="btn btn-default center-block">修改</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 column">
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/axios.min.js"></script>
+<script type="module" lang="ts">
+    import {createApp} from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+    createApp({
+        data() {
+            return {
+                allowChange: false,
+                userInfo: {
+                    name: "",
+                    password: "",
+                    phone: ""
+                },
+                msg: "",
+                name: null,
+                password: null,
+                repeatedPassword: null,
+                phone: null
+            }
+        },
+        mounted() {
+            axios
+                .get("/user/info")
+                .then((response) => {
+                    const data = response.data;
+                    this.userInfo = {
+                        name: data.name,
+                        password: data.password,
+                        phone: data.phone
+                    }
+                })
+                .catch((error) => {
+                    alert(error);
+                });
+        },
+        methods: {
+            change() {
+                this.allowChange = true;
+            },
+            cancel() {
+                this.name = null;
+                this.password = null;
+                this.repeatedPassword = null;
+                this.phone = null;
+                this.allowChange = false;
+            },
+            update() {
+                // 输入检验
+                if (this.name != null && (this.name.length === 0 || this.name.length > 15)) {
+                    this.msg = "用户名不能为空且长度不能大于15"
+                    this.error = true
+                    return;
+                } else if (this.password != null && (this.password.length < 0 || this.password.length > 25)) {
+                    this.msg = "密码长度不能小于6也不能大于25"
+                    this.error = true
+                    return;
+                } else if (this.password != null && !(this.password === this.repeatedPassword)) {
+                    this.msg = "两次密码不一致"
+                    this.error = true
+                    return;
+                } else if (this.phone != null && this.phone.length === 0) {
+                    this.msg = "电话号码不能为空"
+                    this.error = true
+                    return;
+                }
+
+                let success = (response) => {
+                    console.log("success")
+                    this.error = false
+                    this.allowChange = false;
+                    if (this.name != null) {
+                        this.userInfo.name = this.name;
+                    }
+                    if (this.phone != null) {
+                        this.userInfo.phone = this.phone;
+                    }
+                    this.password = "";     // 提交之后，本地销毁密码
+                };
+                let fail = (error) => {
+                    console.log("fail")
+                    this.error = true;
+                    if (error.response.status === 401) {
+                        this.msg = error.response.data;
+                    } else {
+                        this.msg = error.response.data.errors[0].defaultMessage;
+                    }
+                };
+                axios
+                    .post("/user/update",
+                        {
+                            name: this.name,
+                            password: this.password,
+                            phone: this.phone
+                        })
+                    .then(success)
+                    .catch(fail)
+            }
+        }
+    }).mount('#main')
+</script>
+
+
+</body>
+</html>
