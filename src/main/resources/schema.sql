@@ -14,9 +14,9 @@ create table DESK
 create table CUSTOMER
 (
     ID       int auto_increment primary key,
-    NAME     varchar(20) not null,
+    NAME     varchar(20) not null comment '用户名也不能重复' unique,
     PASSWORD varchar(32) not null,
-    PHONE    varchar(14) default null
+    PHONE    varchar(14) default null comment '手机号不能重复注册' unique
 ) charset = utf8mb4;
 
 -- 订单表
@@ -44,7 +44,7 @@ create table DISH
 (
     ID        int auto_increment primary key,
     DISH_NAME varchar(30)   not null,
-    DISH_TYPE varchar(20)   not null,
+    DISH_TYPE_ID varchar(20)   not null,
     PRICE     decimal(9, 2) not null,
     PICTURE   longblob      not null
 ) charset = utf8mb4;
@@ -58,3 +58,9 @@ create table PURCHASE_DISH
     constraint PURCHASE_DISH_PK
         primary key (PURCHASE_ID, DISH_ID)
 ) charset = utf8mb4;
+
+create table DISH_TYPE
+(
+    ID   int auto_increment primary key,
+    NAME varchar(40) not null
+)
