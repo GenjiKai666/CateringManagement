@@ -1,4 +1,4 @@
-use test;
+use cateringmanagement;
 
 -- 餐桌表的模式
 create table DESK
@@ -63,4 +63,4 @@ create table DISH_TYPE
 (
     ID   int auto_increment primary key,
     NAME varchar(40) not null
-)
+)charset = utf8mb4;
