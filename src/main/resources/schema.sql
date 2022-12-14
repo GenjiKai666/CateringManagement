@@ -23,7 +23,7 @@ create table CUSTOMER
 create table PURCHASE
 (
     ID          int auto_increment primary key,
-    CREATE_TIME date          not null,
+    CREATE_TIME timestamp          not null,
     AMOUNT      decimal(9, 2) not null,
     PAY_METHOD  varchar(10)            default null,
     PAY_STATUS  int           not null default 0 comment '0表示没有支付，1表示已经支付',
