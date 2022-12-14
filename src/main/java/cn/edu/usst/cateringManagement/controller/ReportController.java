@@ -1,5 +1,6 @@
 package cn.edu.usst.cateringManagement.controller;
 
+import cn.edu.usst.cateringManagement.bean.vo.ReportVO;
 import cn.edu.usst.cateringManagement.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,15 @@ public class ReportController {
     @Autowired
     ReportService reportService;
     @RequestMapping(value = "/report/day",method = RequestMethod.GET)
-    public void getDay(){
-        reportService.getDayReport(null);
+    public ReportVO getDay(String day){
+        return reportService.getDayReport(day);
+    }
+    @RequestMapping(value = "/report/month",method = RequestMethod.GET)
+    public ReportVO getMonth(String month){
+        return reportService.getMonthReport(month);
+    }
+    @RequestMapping(value = "/report/year",method = RequestMethod.GET)
+    public ReportVO getYear(String year){
+        return reportService.getYearReport(year);
     }
 }
