@@ -1,6 +1,7 @@
 package cn.edu.usst.cateringManagement.controller;
 
 import cn.edu.usst.cateringManagement.bean.dto.PurchaseDTO;
+import cn.edu.usst.cateringManagement.bean.po.CustomerPO;
 import cn.edu.usst.cateringManagement.bean.po.PurchaseDishPO;
 import cn.edu.usst.cateringManagement.bean.po.PurchasePO;
 import cn.edu.usst.cateringManagement.bean.vo.PurchaseDishVO;
@@ -8,10 +9,13 @@ import cn.edu.usst.cateringManagement.bean.vo.PurchaseVO;
 import cn.edu.usst.cateringManagement.mapper.PurchaseDishMapper;
 import cn.edu.usst.cateringManagement.mapper.PurchaseMapper;
 import cn.edu.usst.cateringManagement.service.PurchaseService;
+import cn.edu.usst.cateringManagement.utils.Constant;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -104,5 +108,17 @@ public class PurchaseController {
             return 1;
         }
         return 0;
+    }
+    @RequestMapping(value = "/purchase/getpurchasesbyuserid",method = RequestMethod.GET)
+    public List<PurchaseVO> getPurchasesByUserId(HttpSession session){
+        CustomerPO customerPO = (CustomerPO)session.getAttribute(Constant.USER);
+        Integer userid = customerPO.getId();
+        List<PurchasePO> purchasePOList = purchaseMapper.selectList(Wrappers
+                .lambdaQuery(PurchasePO.class).eq(PurchasePO::getCustomerId,userid));
+        List<PurchaseVO> purchaseVOS = new ArrayList<>();
+        for(PurchasePO po:purchasePOList){
+            purchaseVOS.add(selectById(po.getId()));
+        }
+        return purchaseVOS;
     }
 }

@@ -58,7 +58,7 @@ public class PurchaseService {
     public List<PurchaseDishPO> getPurchaseDishById(int purchaseId){
         return purchaseDishMapper
                 .selectList(Wrappers.lambdaQuery(PurchaseDishPO.class)
-                        .eq(PurchaseDishPO::getDishId, purchaseId)
+                        .eq(PurchaseDishPO::getPurchaseId, purchaseId)
                         .last("order by DISH_ID"));
     }
 

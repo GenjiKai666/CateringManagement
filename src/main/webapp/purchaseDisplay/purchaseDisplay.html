@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>订单显示页面</title>
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <script src="/static/js/bootstrap.min.js"></script>
+</head>
+<style>
+  .display{
+    margin: 0 auto;
+  }
+</style>
+<body>
+<div id="app">
+    <button @click="refresh">刷新</button>
+  <ul>
+    <li v-for="purchase in purchases" :key="purchase.id">
+        <p>{{ purchase.id }} {{ purchase.createTime }} {{ purchase.amount }} {{ purchase.payMethod }} {{ purchase.payStatus }}</p>
+        <p>订单详情:{{purchase.dishList}}</p>
+      <button @click="alipay(purchase)">支付宝支付</button>
+      <button @click="wechat(purchase)">微信支付</button>
+    </li>
+  </ul>
+</div>
+</body>
+<script src="/static/js/axios.min.js"></script>
+<script type="module">
+  import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+  // 给每个 todo 对象一个唯一的 id
+  let id = 0
+
+  createApp({
+    data() {
+      return {
+          error: {
+              alert: true,
+              'alert-danger': true,
+              invisible: true
+          },
+        purchases: []
+      }
+    },
+    methods: {
+      refresh() {
+          let that = this;
+          let success = (response) => {
+              this.error.invisible = true
+              this.purchases = response.data
+              console.log(this.purchases)
+          };
+          let fail = (error) => {
+              this.error.invisible = false;
+          };
+          axios
+              .get("/purchase/getpurchasesbyuserid",)
+              .then(success)
+              .catch(fail)
+      },
+      alipay(purchase){
+          if(purchase.payStatus ===1){
+              alert('已支付,请勿重复支付')
+          }
+          else{
+              axios
+                  .get("/bill/pay?id="+purchase.id+"&&payMethod=Alipay",)
+                  .then(success)
+                  .catch(fail)
+          }
+      },
+      wechat(purchase){
+          if(purchase.payStatus ===1){
+              alert('已支付,请勿重复支付')
+          }
+          else{
+              axios
+                  .get("/bill/pay?id="+purchase.id+"&&payMethod=Wechat",)
+                  .then(success)
+                  .catch(fail)
+          }
+      }
+    }
+  }).mount('#app')
+</script>
+</html>
