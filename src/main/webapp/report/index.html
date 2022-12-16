@@ -97,15 +97,15 @@
             },
             getYearReport(year) {
                 let date = year + "";
-                this.getData("/report/year/" + date);
+                this.getData("/report/year?year=" + date);
             },
             getMonthReport(year, month) {
                 let date = year + "-" + month;
-                this.getData("/report/month/" + date);
+                this.getData("/report/month?month=" + date);
             },
             getDayReport(year, month, day) {
                 let date = year + "-" + month + "-" + day
-                this.getData("/report/day/" + date);
+                this.getData("/report/day?day=" + date);
             },
             getReport() {
                 if (this.day === "null" && this.month === "null"){
