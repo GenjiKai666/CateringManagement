@@ -13,14 +13,15 @@
         <option v-for="item in years"> {{ item }}</option>
     </select>
     <select v-model="month">
-        <option value="null"> all </option>
+        <option value="null"> all</option>
         <option v-for="item in months"> {{ item }}</option>
     </select>
     <select v-model="day">
-        <option value="null"> all </option>
+        <option value="null"> all</option>
         <option v-for="item in days"> {{ item }}</option>
     </select>
-    <button @click="getReport">获取表单</button>
+    <button @click="getReport">获取报表</button>
+    <a :href="downloadURL" download="">下载报表</a>
     <div class="container">
         <div class="row clearfix">
             <div class="col-md-12 column">
@@ -81,9 +82,9 @@
         mounted() {
             const today = new Date();
             this.year = today.getFullYear();
-            this.month = today.getMonth()+1;
+            this.month = today.getMonth() + 1;
             this.day = today.getDate();
-            this.getDayReport(today.getFullYear(),today.getMonth()+1,today.getDate());
+            this.getDayReport(today.getFullYear(), today.getMonth() + 1, today.getDate());
         },
         methods: {
             getData(url) {
@@ -108,22 +109,19 @@
                 this.getData("/report/day?day=" + date);
             },
             getReport() {
-                if (this.day === "null" && this.month === "null"){
+                if (this.day === "null" && this.month === "null") {
                     this.getYearReport(this.year);
-                }
-                else if (this.day === "null") {
-                    this.getMonthReport(this.year,this.month);
-                }
-                else if (this.day !== "null" && this.month !== "null"){
-                    this.getDayReport(this.year,this.month,this.day);
-                }
-                else {
+                } else if (this.day === "null") {
+                    this.getMonthReport(this.year, this.month);
+                } else if (this.day !== "null" && this.month !== "null") {
+                    this.getDayReport(this.year, this.month, this.day);
+                } else {
                     alert("日期设置错误");
                 }
             }
         },
         computed: {
-            out(){
+            out() {
                 console.log(this.year);
                 console.log(typeof (this.month));
                 console.log(this.month);
@@ -161,7 +159,7 @@
                 return this.singleData.money;
             },
             years() {
-                let a = new Array(100).fill(0).map((i,index)=> index + 1990);
+                let a = new Array(100).fill(0).map((i, index) => index + 1990);
                 return a;
             },
             months() {
@@ -170,6 +168,19 @@
             days() {
                 const maxDay = new Date(this.year, this.month, 0).getDate();
                 return Array.from(Array(maxDay), (i, index) => index + 1);
+            },
+            downloadURL() {
+                if (this.day === "null" && this.month === "null") {
+                    return "/report/download/year?year=" + this.year;
+                } else if (this.day === "null") {
+                    let date = this.year + "-" + this.month;
+                    return "/report/download/month?month=" + date;
+                } else if (this.day !== "null" && this.month !== "null") {
+                    let date = this.year + "-" + this.month + "-" + this.day
+                    return "/report/download/day?day=" + date;
+                } else {
+                    alert("日期设置错误");
+                }
             }
         }
     }).mount("#main");
