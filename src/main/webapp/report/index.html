@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>报表</title>
+    <!--  Load bootstrap  -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <script src="/static/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div id="main">
+    <select v-model="year">
+        <option v-for="item in years"> {{ item }}</option>
+    </select>
+    <select v-model="month">
+        <option value="null"> all </option>
+        <option v-for="item in months"> {{ item }}</option>
+    </select>
+    <select v-model="day">
+        <option value="null"> all </option>
+        <option v-for="item in days"> {{ item }}</option>
+    </select>
+    <button @click="getReport">获取表单</button>
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>
+                            日期
+                        </th>
+                        <th>
+                            总交易额
+                        </th>
+                        <th>
+                            总开台数
+                        </th>
+                        </th>
+                        <th v-for="item in msgs"> {{ item }}</th>
+                        <th v-for="item in typeNames">
+                            {{ item }}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            {{ date }}
+                        </td>
+                        <td>
+                            {{ totalMoney }}
+                        </td>
+                        <td>
+                            {{ totalDesk }}
+                        </td>
+                        <td v-for="item in money">
+                            {{ item }}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/axios.min.js"></script>
+<script type="module">
+    import {createApp} from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+    createApp({
+        data() {
+            return {
+                year: 2022,
+                month: 1,
+                day: 1,
+                singleData: null,
+                msg: 'hello',
+            }
+        },
+        mounted() {
+            const today = new Date();
+            this.year = today.getFullYear();
+            this.month = today.getMonth()+1;
+            this.day = today.getDate();
+            this.getDayReport(today.getFullYear(),today.getMonth()+1,today.getDate());
+        },
+        methods: {
+            getData(url) {
+                axios.get(url)
+                    .then((response) => {
+                        console.log(response);
+                        this.singleData = response.data;
+                    }).catch((err) => {
+                    alert("网络错误\n" + err);
+                })
+            },
+            getYearReport(year) {
+                let date = year + "";
+                this.getData("/report/year/" + date);
+            },
+            getMonthReport(year, month) {
+                let date = year + "-" + month;
+                this.getData("/report/month/" + date);
+            },
+            getDayReport(year, month, day) {
+                let date = year + "-" + month + "-" + day
+                this.getData("/report/day/" + date);
+            },
+            getReport() {
+                if (this.day === "null" && this.month === "null"){
+                    this.getYearReport(this.year);
+                }
+                else if (this.day === "null") {
+                    this.getMonthReport(this.year,this.month);
+                }
+                else if (this.day !== "null" && this.month !== "null"){
+                    this.getDayReport(this.year,this.month,this.day);
+                }
+                else {
+                    alert("日期设置错误");
+                }
+            }
+        },
+        computed: {
+            out(){
+                console.log(this.year);
+                console.log(typeof (this.month));
+                console.log(this.month);
+                console.log(typeof (this.day));
+                console.log(this.day);
+            },
+            date() {
+                if (this.singleData === null || this.singleData.date === null || typeof (this.singleData.date) === "undefined") {
+                    return null;
+                }
+                return this.singleData.date;
+            },
+            totalMoney() {
+                if (this.singleData === null || this.singleData.totalMoney === null || typeof (this.singleData.totalMoney) === "undefined") {
+                    return null;
+                }
+                return this.singleData.totalMoney;
+            },
+            totalDesk() {
+                if (this.singleData === null || this.singleData.totalDesk === null || typeof (this.singleData.totalDesk) === "undefined") {
+                    return null;
+                }
+                return this.singleData.totalDesk;
+            },
+            typeNames() {
+                if (this.singleData === null || this.singleData.typeName === null || typeof (this.singleData.typeName) === "undefined") {
+                    return [];
+                }
+                return this.singleData.typeName;
+            },
+            money() {
+                if (this.singleData === null || this.singleData.money === null || typeof (this.singleData.money) === "undefined") {
+                    return [];
+                }
+                return this.singleData.money;
+            },
+            years() {
+                let a = new Array(100).fill(0).map((i,index)=> index + 1990);
+                return a;
+            },
+            months() {
+                return Array.from(Array(12), (i, index) => index + 1);
+            },
+            days() {
+                const maxDay = new Date(this.year, this.month, 0).getDate();
+                return Array.from(Array(maxDay), (i, index) => index + 1);
+            }
+        }
+    }).mount("#main");
+</script>
+</body>
+</html>
