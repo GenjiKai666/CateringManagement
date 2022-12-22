@@ -68,6 +68,18 @@ public class OrderController {
         try {
             BigDecimal totalPrice = new BigDecimal("0");
             LambdaQueryWrapper<DishPO> dishQueryWrapper;
+
+            //从session中读用户信息
+            HttpSession session = request.getSession(true);
+            CustomerPO customer = (CustomerPO) session.getAttribute(Constant.USER);
+
+            //从数据库读出该用户的订单信息////这个地方用户的状态要为假
+            LambdaQueryWrapper<PurchasePO> purchaseQueryWrapper = new LambdaQueryWrapper<>();
+            purchaseQueryWrapper.eq(PurchasePO::getCustomerId, customer.getId());
+            purchaseQueryWrapper.eq(PurchasePO::getPayStatus, 0);
+            PurchasePO purchase = purchaseMapper.selectOne(purchaseQueryWrapper);
+
+
             for (Map map : list) {
                 int id = Integer.parseInt((String) map.get("index")); //每道菜的id
                 String number = (String) map.get("number"); //每道菜的已点数量
@@ -76,17 +88,9 @@ public class OrderController {
                 dishQueryWrapper.eq(DishPO::getId, id);
                 DishPO dish = dishMapper.selectOne(dishQueryWrapper);
                 totalPrice = totalPrice.add(dish.getPrice().multiply(new BigDecimal(number)));
+                addDish(id, Integer.valueOf(number), purchase.getId());
                 System.out.println("id:" + id + ",number:" + number + ",price:" + dish.getPrice() + ",totalPrice:" + totalPrice);
             }
-
-            //从session中读用户信息
-            HttpSession session = request.getSession(true);
-            CustomerPO customer = (CustomerPO) session.getAttribute(Constant.USER);
-
-            //从数据库读出该用户的订单信息
-            LambdaQueryWrapper<PurchasePO> purchaseQueryWrapper = new LambdaQueryWrapper<>();
-            purchaseQueryWrapper.eq(PurchasePO::getCustomerId, customer.getId());
-            PurchasePO purchase = purchaseMapper.selectOne(purchaseQueryWrapper);
 
             //修改该订单信息
             LambdaUpdateWrapper<PurchasePO> purchaseUpdateWrapper = new LambdaUpdateWrapper<>();
