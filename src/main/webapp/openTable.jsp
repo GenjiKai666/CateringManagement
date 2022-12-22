@@ -120,8 +120,7 @@
           rutrum eleif arcu sit aspernatur nets fugit, sed quia.</p>
 
         <!--begin success message -->
-        <p class="register_success_box" style="display:none;color:#ffffff" id="result">Successfully opened! your seat
-          number is </p>
+        <p class="register_success_box" style="display:none;color:#ffffff" id="result"></p>
         <!--end success message -->
 
         <!--begin register form -->
@@ -130,16 +129,12 @@
           <!--begin col-md-6-->
           <div class="col-md-6">
 
-            <input class="register-input-2 white-input" required="" name="register_names"
-                   placeholder="Full Name" type="text" id="fullName">
-
-
             <select class="register-input-2 white-input" required="" name="register_ticket" id="number">
               <option value="">How Many?</option>
               <option value=1>1 Person</option>
               <option value=2>2 People</option>
               <option value=3>3 People</option>
-              <option value=4">4 People</option>
+              <option value=4>4 People</option>
               <option value=5>5 People</option>
               <option value=6>6 People</option>
               <option value=7>7 People</option>
@@ -151,15 +146,16 @@
             <script type="text/javascript">
               function f1() {
                 let number = document.getElementById("number").value;
-                let phoneNumber = document.getElementById("phoneNumber").value;
-                let fullName = document.getElementById("fullName").value;
-                console.log(number + ":" + phoneNumber + ":" + fullName);
-                axios.get('/openTable?number=' + number + "&phoneNumber" + phoneNumber + "&fullName" + fullName //向后端传数据
+                console.log(number);
+                axios.get('/openTable?number=' + number
                 ).then(res => {
                   console.log(res.data);
                   let seat = res.data; // 获取后端返回数据
                   let result = document.getElementById("result");
-                  result.innerText = result.innerText + seat;
+                  if (seat == 0)
+                    result.innerText = "Sorry, there is no suitable seat now. You need to wait.";
+                  else
+                    result.innerText = "Successfully opened! your seat id is " + seat;
                   console.log(seat);
                 }).catch(err => {
                   console.log(err);
@@ -185,9 +181,6 @@
 
           <!--begin col-md-6-->
           <div class="col-md-6">
-
-            <input class="register-input-2 white-input" required="" name="register_phone"
-                   placeholder="Phone Number" type="text" id="phoneNumber">
 
           </div>
           <!--end col-md-6-->
