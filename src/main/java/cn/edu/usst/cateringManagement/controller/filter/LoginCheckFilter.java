@@ -28,12 +28,6 @@ public class LoginCheckFilter implements Filter {
                 filterChain.doFilter(httpServletRequest, httpServletResponse);
                 return;
             }
-            // TODO 处理好管理员登陆之后，移除该放行
-            // 暂时没有实现管理员登陆，为了测试，统一放行管理员相关界面
-//            if (path.startsWith("/management") || path.startsWith("/report")) {
-//                filterChain.doFilter(httpServletRequest, httpServletResponse);
-//                return;
-//            }
 
             // 非静态资源访问
             // 已经登陆用户

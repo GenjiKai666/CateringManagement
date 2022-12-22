@@ -43,6 +43,11 @@ public class UserController {
         if (Objects.isNull(customerPO)) {
             // 登陆失败
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } else if (customerPO.getId() == 1) {
+            // 登陆成功，session记录
+            session.setAttribute(Constant.USER, customerPO);
+            session.setAttribute(Constant.ROLE, Constant.ADMIN);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
             // 登陆成功，session记录
             session.setAttribute(Constant.USER, customerPO);
