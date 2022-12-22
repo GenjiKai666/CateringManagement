@@ -77,8 +77,8 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="about.html">About Us</a></li>
                     <li class="selected"><a href="">Menu</a></li>
-                    <li><a href="order.html">Dishes Order</a></li> <!--跳转到以点订单-->
-                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="purchaseDisplay/purchaseDisplay.html">Dishes Order</a></li> <!--跳转到以点订单-->
+                    <li><a href="/management">Management</a></li>
                     <li><a href="contact.html">Contact</a></li>
                     <li class="social"><a href="#" class="first"><i class="fa fa-twitter"></i></a></li>
                     <li class="social"><a href="#"><i class="fa fa-facebook"></i></a></li>

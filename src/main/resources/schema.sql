@@ -46,7 +46,7 @@ create table DISH
     DISH_NAME varchar(30)   not null,
     DISH_TYPE_ID varchar(20)   not null,
     PRICE     decimal(9, 2) not null,
-    PICTURE   longblob      not null
+    PICTURE   longblob      default null
 ) charset = utf8mb4;
 
 -- 菜品和订单的关系
