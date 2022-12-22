@@ -2,12 +2,15 @@ package cn.edu.usst.cateringManagement.controller;
 
 import cn.edu.usst.cateringManagement.bean.po.CustomerPO;
 import cn.edu.usst.cateringManagement.bean.po.DishPO;
+import cn.edu.usst.cateringManagement.bean.po.PurchaseDishPO;
 import cn.edu.usst.cateringManagement.bean.po.PurchasePO;
 import cn.edu.usst.cateringManagement.mapper.DishMapper;
+import cn.edu.usst.cateringManagement.mapper.PurchaseDishMapper;
 import cn.edu.usst.cateringManagement.mapper.PurchaseMapper;
 import cn.edu.usst.cateringManagement.utils.Constant;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,7 +36,29 @@ public class OrderController {
 
     @Autowired
     DishMapper dishMapper;
+    @Autowired
+    PurchaseDishMapper purchaseDishMapper;
 
+    /**
+     * 向purchaseDish表中插入信息
+     * @param dish_id 菜品ID
+     * @param number 菜品数量
+     * @param purchase_id 订单ID
+     */
+    private void addDish(Integer dish_id,Integer number,Integer purchase_id){
+        if(purchaseDishMapper.exists(Wrappers.lambdaQuery(PurchaseDishPO.class)
+                .eq(PurchaseDishPO::getPurchaseId,purchase_id)
+                .eq(PurchaseDishPO::getDishId,dish_id))){
+            PurchaseDishPO po = purchaseDishMapper.selectOne(Wrappers.lambdaQuery(PurchaseDishPO.class)
+                    .eq(PurchaseDishPO::getPurchaseId,purchase_id)
+                    .eq(PurchaseDishPO::getDishId,dish_id));
+            po.setDishNum(number+ po.getDishNum());
+            purchaseDishMapper.updateById(po);
+        }
+        else{
+            purchaseDishMapper.insert(new PurchaseDishPO(purchase_id,dish_id,number));
+        }
+    }
     @PostMapping()
     public String post(@RequestBody List<Map> list,
                        HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
