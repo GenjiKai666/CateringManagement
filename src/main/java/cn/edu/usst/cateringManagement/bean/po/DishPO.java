@@ -20,6 +20,7 @@ public class DishPO {
     @TableField
     private String dishName;
     @TableField
+//    private String picture;
     private byte[] picture;
     @TableField
     private BigDecimal price;

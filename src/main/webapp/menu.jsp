@@ -1,9 +1,7 @@
-<%--<jsp:useBean id="DishPO" scope="request"/>--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
-<!--166-->
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -140,554 +138,187 @@
     <!--begin container-->
     <div class="container">
 
-        <!--每个row里面有两个菜品类别-->
+        <c:forEach var="i" begin="0" end="${fn:length(requestScope.typeList)-1}" step="2">
+            <!--开始一行（每一行里面有两个菜品类别）-->
+            <div class="row">
 
-        <!--begin row-->
-        <div class="row">
+                <!--左边的菜品类别-->
+                <div class="col-md-6">
+                    <h2 class="menu-section-title">${requestScope.typeList.get(i).name}</h2>
+                    <c:forEach var="dish" items="${requestScope.dishMap.get(requestScope.typeList.get(i).id)}"
+                               varStatus="status">
+                        <!--开始一个菜-->
+                        <div class="menu-wrapper">
 
-            <!--begin col-md-6-->
-            <div class="col-md-6">
-
-                <h2 class="menu-section-title">Breakfast &amp; Starters</h2>
-
-                <c:forEach var="dish" items="${requestScope.dishList}" varStatus="status">
-                    <!--begin menu-wrapper-->
-                    <div class="menu-wrapper">
-
-                        <!--begin menu-image-->
-                        <div class="menu-image"> <!--图片-->
-                                <%--把二进制转成图片--%>
-                            <a href="#"><img src="static/picture/m1.jpg" class="width-100" alt="food"></a>
-
-                        </div>
-                        <!--end menu-image-->
-
-                        <!--begin menu-description -->
-                        <div class="menu-description">
-
-                            <!--begin menu-list-->
-                            <div class="menu-list">
-
-                                <h5>${dish.dishName}</h5> <!--菜品名称-->
-
-                                <p class="price">${dish.price}</p><!--价格-->
-
-                                <span class="menu-dot-line"></span>
+                            <!--begin menu-image-->
+                            <div class="menu-image"> <!--图片-->
+                                <a href="#"><img src="static/picture/${dish.id}picture.jpg" class="width-100"
+                                                 alt="food"></a>
 
                             </div>
-                            <!--end menu-list-->
-                            <!--详情-->
-                            <p class="menu-ingredients">Scrambled eggs with crispy bacon</p>
-                            <!--点餐按钮-->
-                            <button id=${dish.id} onclick="choose(id)">choose</button> <!--button的id不可以写死-->
+                            <!--end menu-image-->
+
+                            <!--begin menu-description -->
+                            <div class="menu-description">
+
+                                <!--begin menu-list-->
+                                <div class="menu-list">
+
+                                    <h5>${dish.dishName}</h5> <!--菜品名称-->
+
+                                    <p class="price">${dish.price}</p><!--价格-->
+
+                                    <span class="menu-dot-line"></span>
+
+                                </div>
+                                <!--end menu-list-->
+                                <!--详情-->
+                                <p class="menu-ingredients">Scrambled eggs with crispy bacon</p>
+                                <!--点餐按钮-->
+                                <button id=${dish.id} onclick="add(id)">+</button>
+                                <c:set var="idshow" value="${dish.id}show"/>
+                                <input type="text" readonly="true" style="width:18px" value="0" id=${idshow}><%--20--%>
+                                <button id=${dish.id} onclick="sub(id)">-</button>
+                            </div>
+                            <!--end menu-description-->
+
                         </div>
-                        <!--end menu-description-->
+                        <!--结束一个菜-->
+                    </c:forEach>
+                </div>
+                <!--结束左边的菜品类别-->
 
-                    </div>
-                    <!--end menu-wrapper-->
-                </c:forEach>
+                    <%--如果i<${fn:length(requestScope.typeList)}-1，才能进行下列操作--%>
+                <c:if test="${i<fn:length(requestScope.typeList)-1}">
+                    <!--右边的菜品类别-->
+                    <div class="col-md-6">
+                        <h2 class="menu-section-title">${requestScope.typeList.get(i+1).name}</h2>
+                        <c:forEach var="dish" items="${requestScope.dishMap.get(requestScope.typeList.get(i+1).id)}"
+                                   varStatus="status">
+                            <!--开始一个菜-->
+                            <div class="menu-wrapper">
 
-                <input value="Submit Order" id="submit-button" class="register-submit" type="submit" onclick="f1()">
-                <%--<c:forEach var="dish" items="${requestScope.dishList}" varStatus="status">
-                    &lt;%&ndash;为奇数行和偶数行设置不同的背景颜色
-                    <c:if test="${status.count%2==0}">
-                        <tr style="background:#eeeeff">
-                    </c:if>
-                    <c:if test="${status.count%2!=0}">
-                        <tr style="background:#dedeff">
-                    </c:if>
-                    &lt;%&ndash;用EL访问作用域变量的成员&ndash;%&gt;
-                    <td>${book.isbn}</td>
-                    <td>${book.title}</td>
-                    <td>${book.price}</td>
-                    </tr>&ndash;%&gt;
-                    <script type="text/javascript">
-                        function f1() {
-                            var map = new Map();//key:菜品编号，value:菜品数量
-                            for(var dish of "${dishList}") {
-                                console.log(dish);
-                                map.set(1, document.getElementById(${dish.id}).value);
-                            }
-                            axios.post("/order",map)
-                                .then((res)=>{
-                                    console.log(res.data);
-                                    alert("您的订单已提交成功");
-                                })
-                            //用户名和电话号码都已经存在session里面了，这里只需要向后端传map
-                        }
-                    </script>
-                </c:forEach>
---%>
-                <script type="text/javascript">
-                    function choose(id) {
-                        let result = document.getElementById(id);
-                        if (result.innerText == "choose")
-                            result.innerText = "1";
-                        else result.innerText = parseInt(result.innerText) + 1;
-                    }
+                                <!--begin menu-image-->
+                                <div class="menu-image"> <!--图片-->
+                                        <%--图片在picture文件夹下，路径为static/picture/编号+picture.jpg--%>
+                                    <a href="#"><img src="static/picture/${dish.id}picture.jpg" class="width-100"
+                                                     alt="food"></a>
 
-                    function f1() {
-                        var map = new Map();//key:菜品编号，value:菜品数量
-                        console.log("dishList：" + "${requestScope.dishList}");
-                        console.log("dishList_0：" + "${requestScope.dishList[0]}");
-                        console.log("dishList_0_name：" + "${requestScope.dishList[0].dishName}");
-                        console.log("length：" +${fn:length(dishList)});
+                                </div>
+                                <!--end menu-image-->
 
-                        //读出dish.id之后根据id找到对应的按钮，将按钮的值放入map中，传给后端
-                        <c:forEach var="dish" items="${requestScope.dishList}" varStatus="status">
-                        <%--console.log("dish.id:"+"${dish.id}");--%>
-                        <%--console.log("button:"+document.getElementById("${dish.id}").innerText);--%>
-                        map.set("${dish.id}", document.getElementById("${dish.id}").innerText);
+                                <!--begin menu-description -->
+                                <div class="menu-description">
+
+                                    <!--begin menu-list-->
+                                    <div class="menu-list">
+
+                                        <h5>${dish.dishName}</h5> <!--菜品名称-->
+
+                                        <p class="price">${dish.price}</p><!--价格-->
+
+                                        <span class="menu-dot-line"></span>
+
+                                    </div>
+                                    <!--end menu-list-->
+                                    <!--详情-->
+                                    <p class="menu-ingredients">Scrambled eggs with crispy bacon</p>
+                                    <!--点餐按钮-->
+                                    <button id=${dish.id} onclick="add(id)">+</button>
+                                    <c:set var="idshow" value="${dish.id}show"/>
+                                    <input type="text" readonly="true" style="width:18px" value="0" id=${idshow}><%--20--%>
+                                    <button id=${dish.id} onclick="sub(id)">-</button>
+                                </div>
+                                <!--end menu-description-->
+
+                            </div>
+                            <!--结束一个菜-->
                         </c:forEach>
-                        var params = new URLSearchParams();
-                        params.append('map', map);
-                        axios({
-                            method: 'post',
-                            url: '/order',
-                            data: params
-                        }).then((res) => {
-                            console.log(res.data);
-                            alert("您的订单已提交成功");
-                        });
+                    </div>
+                    <!--结束右边的菜品类别-->
+                </c:if>
+            </div>
+            <!--结束一行-->
 
-                        /*axios.post("/order",map)
-                            .then((res)=>{
-                                console.log(res.data);
-                                alert("您的订单已提交成功");
-                            })*/
-                        //用户名和电话号码都已经存在session里面了，这里只需要向后端传map
-                        /*axios.get('/order?number=' + number + "&phoneNumber" +phoneNumber +"&fullName" +fullName //向后端传数据
-                        ).then(res => {
-                            let seat = res.data; // 获取后端返回数据
-                            let result = document.getElementById("result");
-                            result.innerText = result.innerText + seat;
-                        }).catch(err => {
-                            console.log(err);
-                        });*/
+        </c:forEach>
+
+        <%--提交按钮--%>
+        <input value="Submit Order" id="submit-button" class="register-submit" type="submit" onclick="f1()">
+
+        <%--script--%>
+        <script type="text/javascript">
+            function add(id) {
+                let result = document.getElementById(id + "show");
+                result.value = parseInt(result.value) + 1;
+            }
+
+            function sub(id) {
+                let result = document.getElementById(id + "show");
+                if (result.value > 0)
+                    result.value = parseInt(result.value) - 1;
+            }
+
+
+            function f1() {
+                <%--console.log("dishList_0_name：" + "${requestScope.dishList[0].dishName}");--%>
+                <%--console.log("length：" +${fn:length(dishList)});--%>
+                //读出dish.id之后根据id找到对应的按钮，将按钮的值放入list中，传给后端
+                var list = [];
+                <c:forEach var="type" items="${requestScope.typeList}" varStatus="status">
+                <c:forEach var="dish" items="${requestScope.dishMap.get(type.id)}" varStatus="status">
+                var index = "${dish.id}";
+                var number = document.getElementById("${dish.id}" + "show").value;
+                if (number == "choose")
+                    number = "0";
+                console.log("index:" + index + "number:" + number); //index:菜品编号，number:菜品数量
+                list.push({index: index, number: number});
+                /*提交订单后恢复0*/
+                document.getElementById("${dish.id}" + "show").value = "0"
+                </c:forEach>
+                </c:forEach>
+                console.log(JSON.stringify(list));
+                axios({
+                    method: "post",
+                    url: "/order",
+                    data: JSON.stringify(list),
+                    headers: {
+                        'Content-Type': 'application/json'
                     }
-                </script>
-
-                <!--begin menu-wrapper-->
-                <div class="menu-wrapper">
-
-                    <!--begin menu-image-->
-                    <div class="menu-image">
-
-                        <a href="#"><img src="static/picture/m5.jpg" class="width-100" alt="food"></a>
-
-                    </div>
-                    <!--end menu-image-->
-
-                    <!--begin menu-description-->
-                    <div class="menu-description">
-
-                        <!--begin menu-list-->
-                        <div class="menu-list">
-
-                            <h5>English Breakfast</h5>
-
-                            <p class="price">$12.95</p>
-
-                            <span class="menu-dot-line"></span>
-
-                        </div>
-                        <!--end menu-list-->
-
-                        <p class="menu-ingredients">Scrambled eggs with crispy bacon, sausage, fresh black pudding,
-                            breadcumbs, onion, mustard, canbbery nut, baked brie, rucola, tomato &amp; mushroom.</p>
-
-                    </div>
-                    <!--end menu-description-->
-
-                </div>
-                <!--end menu-wrapper-->
-
-                <!--begin menu-wrapper-->
-                <div class="menu-wrapper">
-
-                    <!--begin menu-image-->
-                    <div class="menu-image">
-
-                        <a href="#"><img src="static/picture/m7.jpg" class="width-100" alt="food"></a>
-
-                    </div>
-                    <!--end menu-image-->
-
-                    <!--begin menu-description-->
-                    <div class="menu-description">
-
-                        <!--begin menu-list-->
-                        <div class="menu-list">
-
-                            <h5>English Breakfast</h5>
-
-                            <p class="price">$12.95</p>
-
-                            <span class="menu-dot-line"></span>
-
-                        </div>
-                        <!--end menu-list-->
-
-                        <p class="menu-ingredients">Scrambled eggs with crispy bacon, sausage, fresh black pudding,
-                            breadcumbs, onion, mustard, canbbery nut, baked brie, rucola, tomato &amp; mushroom.</p>
-
-                    </div>
-                    <!--end menu-description-->
-
-                </div>
-                <!--end menu-wrapper-->
-
-            </div>
-            <!--end col-md-6-->
-
-            <!--begin col-md-6-->
-            <div class="col-md-6">
-
-                <h2 class="menu-section-title">Main Course</h2>
-
-                <!--begin menu-wrapper-->
-                <div class="menu-wrapper">
-
-                    <!--begin menu-image-->
-                    <div class="menu-image">
-
-                        <a href="#"><img src="static/picture/m3.jpg" class="width-100" alt="food"></a>
-
-                    </div>
-                    <!--end menu-image-->
-
-                    <!--begin menu-description-->
-                    <div class="menu-description">
-
-                        <!--begin menu-list-->
-                        <div class="menu-list">
-
-                            <h5>English Breakfast</h5>
-
-                            <p class="price">$12.95</p>
-
-                            <span class="menu-dot-line"></span>
-
-                        </div>
-                        <!--end menu-list-->
-
-                        <p class="menu-ingredients">Scrambled eggs with crispy bacon, sausage, fresh black pudding,
-                            breadcumbs, onion, mustard, canbbery nut, baked brie, rucola, tomato &amp; mushroom.</p>
-
-                    </div>
-                    <!--end menu-description-->
-
-                </div>
-                <!--end menu-wrapper-->
-
-                <!--begin menu-wrapper-->
-                <div class="menu-wrapper">
-
-                    <!--begin menu-image-->
-                    <div class="menu-image">
-
-                        <a href="#"><img src="static/picture/m4.jpg" class="width-100" alt="food"></a>
-
-                    </div>
-                    <!--end menu-image-->
-
-                    <!--begin menu-description-->
-                    <div class="menu-description">
-
-                        <!--begin menu-list-->
-                        <div class="menu-list">
-
-                            <h5>English Breakfast</h5>
-
-
-                            <p class="price">$12.95</p>
-
-                            <span class="menu-dot-line"></span>
-
-                        </div>
-                        <!--end menu-list-->
-
-                        <p class="menu-ingredients">Scrambled eggs with crispy bacon, sausage, fresh black pudding,
-                            breadcumbs, onion, mustard, canbbery nut, baked brie, rucola, tomato &amp; mushroom.</p>
-
-                    </div>
-                    <!--end menu-description-->
-
-                </div>
-                <!--end menu-wrapper-->
-
-                <!--begin menu-wrapper-->
-                <div class="menu-wrapper">
-
-                    <!--begin menu-image-->
-                    <div class="menu-image">
-
-                        <a href="#"><img src="static/picture/m2.jpg" class="width-100" alt="food"></a>
-
-                    </div>
-                    <!--end menu-image-->
-
-                    <!--begin menu-description-->
-                    <div class="menu-description">
-
-                        <!--begin menu-list-->
-                        <div class="menu-list">
-
-                            <h5>English Breakfast</h5>
-
-                            <p class="price">$12.95</p>
-
-                            <span class="menu-dot-line"></span>
-
-                        </div>
-                        <!--end menu-list-->
-
-                        <p class="menu-ingredients">Scrambled eggs with crispy bacon, sausage, fresh black pudding,
-                            breadcumbs, onion, mustard, canbbery nut, baked brie, rucola, tomato &amp; mushroom.</p>
-
-                    </div>
-                    <!--end menu-description-->
-
-                </div>
-                <!--end menu-wrapper-->
-
-            </div>
-            <!--end col-md-6-->
-
-        </div>
-        <!--end row-->
-
-        <!--begin row-->
-        <div class="row">
-
-            <!--begin col-md-6-->
-            <div class="col-md-6">
-
-                <h2 class="menu-section-title">Dinner</h2>
-
-                <!--begin menu-wrapper-->
-                <div class="menu-wrapper">
-
-                    <!--begin menu-image-->
-                    <div class="menu-image">
-
-                        <a href="#"><img src="static/picture/m2.jpg" class="width-100" alt="food"></a>
-
-                    </div>
-                    <!--end menu-image-->
-
-                    <!--begin menu-description-->
-                    <div class="menu-description">
-
-                        <!--begin menu-list-->
-                        <div class="menu-list">
-
-                            <h5>English Breakfast</h5>
-
-                            <p class="price">$12.95</p>
-
-                            <span class="menu-dot-line"></span>
-
-                        </div>
-                        <!--end menu-list-->
-
-                        <p class="menu-ingredients">Scrambled eggs with crispy bacon, sausage, fresh black pudding,
-                            breadcumbs, onion, mustard, canbbery nut, baked brie, rucola, tomato &amp; mushroom.</p>
-
-                    </div>
-                    <!--end menu-description-->
-
-                </div>
-                <!--end menu-wrapper-->
-
-                <!--begin menu-wrapper-->
-                <div class="menu-wrapper">
-
-                    <!--begin menu-image-->
-                    <div class="menu-image">
-
-                        <a href="#"><img src="static/picture/m4.jpg" class="width-100" alt="food"></a>
-
-                    </div>
-                    <!--end menu-image-->
-
-                    <!--begin menu-description-->
-                    <div class="menu-description">
-
-                        <!--begin menu-list-->
-                        <div class="menu-list">
-
-                            <h5>English Breakfast</h5>
-
-                            <p class="price">$12.95</p>
-
-                            <span class="menu-dot-line"></span>
-
-                        </div>
-                        <!--end menu-list-->
-
-                        <p class="menu-ingredients">Scrambled eggs with crispy bacon, sausage, fresh black pudding,
-                            breadcumbs, onion, mustard, canbbery nut, baked brie, rucola, tomato &amp; mushroom.</p>
-
-                    </div>
-                    <!--end menu-description-->
-
-                </div>
-                <!--end menu-wrapper-->
-
-                <!--begin menu-wrapper-->
-                <div class="menu-wrapper">
-
-                    <!--begin menu-image-->
-                    <div class="menu-image">
-
-                        <a href="#"><img src="static/picture/m8.jpg" class="width-100" alt="food"></a>
-
-                    </div>
-                    <!--end menu-image-->
-
-                    <!--begin menu-description-->
-                    <div class="menu-description">
-
-                        <!--begin menu-list-->
-                        <div class="menu-list">
-
-                            <h5>English Breakfast</h5>
-
-                            <p class="price">$12.95</p>
-
-                            <span class="menu-dot-line"></span>
-
-                        </div>
-                        <!--end menu-list-->
-
-                        <p class="menu-ingredients">Scrambled eggs with crispy bacon, sausage, fresh black pudding,
-                            breadcumbs, onion, mustard, canbbery nut, baked brie, rucola, tomato &amp; mushroom.</p>
-
-                    </div>
-                    <!--end menu-description-->
-
-                </div>
-                <!--end menu-wrapper-->
-
-            </div>
-            <!--end col-md-6-->
-
-            <!--begin col-md-6-->
-            <div class="col-md-6">
-
-                <h2 class="menu-section-title">Coffee &amp; Drinks</h2>
-
-                <!--begin menu-wrapper-->
-                <div class="menu-wrapper">
-
-                    <!--begin menu-image-->
-                    <div class="menu-image">
-
-                        <a href="#"><img src="static/picture/m11.jpg" class="width-100" alt="food"></a>
-
-                    </div>
-                    <!--end menu-image-->
-
-                    <!--begin menu-description-->
-                    <div class="menu-description">
-
-                        <!--begin menu-list-->
-                        <div class="menu-list">
-
-                            <h5>English Breakfast</h5>
-
-                            <p class="price">$12.95</p>
-
-                            <span class="menu-dot-line"></span>
-
-                        </div>
-                        <!--end menu-list-->
-
-                        <p class="menu-ingredients">Scrambled eggs with crispy bacon, sausage, fresh black pudding,
-                            breadcumbs, onion, mustard, canbbery nut, baked brie, rucola, tomato &amp; mushroom.</p>
-
-                    </div>
-                    <!--end menu-description-->
-
-                </div>
-                <!--end menu-wrapper-->
-
-                <!--begin menu-wrapper-->
-                <div class="menu-wrapper">
-
-                    <!--begin menu-image-->
-                    <div class="menu-image">
-
-                        <a href="#"><img src="static/picture/m9.jpg" class="width-100" alt="food"></a>
-
-                    </div>
-                    <!--end menu-image-->
-
-                    <!--begin menu-description-->
-                    <div class="menu-description">
-
-                        <!--begin menu-list-->
-                        <div class="menu-list">
-
-                            <h5>English Breakfast</h5>
-
-                            <p class="price">$12.95</p>
-
-                            <span class="menu-dot-line"></span>
-
-                        </div>
-                        <!--end menu-list-->
-
-                        <p class="menu-ingredients">Scrambled eggs with crispy bacon, sausage, fresh black pudding,
-                            breadcumbs, onion, mustard, canbbery nut, baked brie, rucola, tomato &amp; mushroom.</p>
-
-                    </div>
-                    <!--end menu-description-->
-
-                </div>
-                <!--end menu-wrapper-->
-
-                <!--begin menu-wrapper-->
-                <div class="menu-wrapper">
-
-                    <!--begin menu-image-->
-                    <div class="menu-image">
-
-                        <a href="#"><img src="static/picture/m10.jpg" class="width-100" alt="food"></a>
-
-                    </div>
-                    <!--end menu-image-->
-
-                    <!--begin menu-description-->
-                    <div class="menu-description">
-
-                        <!--begin menu-list-->
-                        <div class="menu-list">
-
-                            <h5>English Breakfast</h5>
-
-                            <p class="price">$12.95</p>
-
-                            <span class="menu-dot-line"></span>
-
-                        </div>
-                        <!--end menu-list-->
-
-                        <p class="menu-ingredients">Scrambled eggs with crispy bacon, sausage, fresh black pudding,
-                            breadcumbs, onion, mustard, canbbery nut, baked brie, rucola, tomato &amp; mushroom.</p>
-
-                    </div>
-                    <!--end menu-description-->
-
-                </div>
-                <!--end menu-wrapper-->
-
-            </div>
-            <!--end col-md-6-->
-
-        </div>
-        <!--end row-->
+                }).then(res => {
+                    console.log(res.data);
+                    alert("您的订单已提交成功");
+                })
+                /*axios({
+                    method: 'post',
+                    url: '/order',
+                    data: JSON.stringify({
+                        test1:'123',
+                        test2:'123123'
+                    }),
+                    header: {
+                        'Content-Type': "application/json"
+                    }
+                }).then((res) => {
+                    console.log(res.data);
+                    alert("您的订单已提交成功");
+                });*/
+                /*var userList = [];
+                userList.push({username: "zhangsan", age: 18});
+                userList.push({username: "lisi", age: 28});
+                console.log(JSON.stringify(userList));
+                console.log(typeof JSON.stringify(userList)); //String
+                axios.post("/order",JSON.stringify(userList))
+                    .then((res) => {
+                    console.log(res.data);
+                    alert("您的订单已提交成功");
+                });*/
+                /*axios.post("/order",map)
+                    .then((res)=>{
+                        console.log(res.data);
+                        alert("您的订单已提交成功");
+                    })*/
+            }
+        </script>
 
     </div>
     <!--end container-->

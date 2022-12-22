@@ -1,10 +1,15 @@
 spring:
   # 数据库的简单配置，主要是为了加入mybatis依赖之后，Springboot可以正常启动
+  #  datasource:
+  #    driver-class-name: org.mariadb.jdbc.Driver
+  #    url: jdbc:mariadb://localhost:3306/test?allowMultiQueries=true
+  #    username: test
+  #    password: "123456"
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/test?allowMultiQueries=true
-    username: test
-    password: "123456"
+    url: jdbc:mariadb://47.101.195.80:1100/zyy?allowMultiQueries=true
+    username: zyy
+    password: "2c6ebc9a-5bd2-4c34-becd-8a9f0f0ce2e8"
   mvc:
     hiddenmethod:
       filter:
@@ -12,6 +17,10 @@ spring:
     view:
       prefix: /
       suffix: .jsp
+
+  view:
+    prefix: /
+    suffix: .jsp
 
 #mybatis-plus
 mybatis-plus:
